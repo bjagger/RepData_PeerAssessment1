@@ -180,7 +180,7 @@ When missing values are imputed the difference between the two datasets in mean 
 
 ```{r}
 
-########  Please note these combined overlaid plots    ########              
+########  Please note these combined overlay plots    ########              
 ########  were not required for the assignement; they  ########       
 ########  were added for visualizing the comparison.  ######## 
 

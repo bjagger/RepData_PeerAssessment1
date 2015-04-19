@@ -1,3 +1,6 @@
+### Please note: this submission contains an extra plot **not required by the assignment** 
+but added to help in the comparison section of "Imputing missing values". 
+
 ## Introduction
 
 It is now possible to collect a large amount of data about personal
