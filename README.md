@@ -1,5 +1,6 @@
-### Please note: this submission contains an extra plot **not required by the assignment** 
-but added to help in the comparison section of "Imputing missing values". 
+#### Please note: this submission contains an extra plot not required
+by the assignment but added to help in the comparison section of
+"Imputing missing values". 
 
 ## Introduction
 
