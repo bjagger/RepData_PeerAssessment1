@@ -175,13 +175,19 @@ x ; y
 ```
 
 ### Conclusion: 
-When missing values are imputed the difference between the two datasets in mean (`r x`) and median (`r round(y, 0)`) appears insignificant. Overlaid density plots (below) show imputation heightens and sharpens kurtosis in the resulting dataset.
+When missing values are imputed the difference between the two datasets in mean (`r x`) and median (`r round(y, 0)`) appears insignificant. Overlaid histogram and density plots (below) show that imputation heightens and sharpens kurtosis.  
+
 
 ```{r}
-# Visual comparison of the two datasets  
-# Overlay density and histogram plots
 
-# combine dataframes into one after addubg a new variable
+########  Please note these combined overlaid plots    ########              
+########  were not required for the assignement; they  ########       
+########  were added for visualizing the comparison.  ######## 
+
+# Visual comparison of the two datasets  
+# Overlay histogram and density plots
+
+# combine dataframes into one after adding a new variable
 # to distinguish which total steps are from which
 
 totalSteps3 <- totalSteps ; totalSteps4 <- totalSteps2
@@ -198,21 +204,22 @@ totalSteps5 <- rbind(totalSteps3, totalSteps4)
 # for processing via function shown further below
 
 p1 <- ggplot(totalSteps5, aes(sums, fill = dataset)) +
-      geom_histogram(alpha = 0.5,
-                     aes(y = ..density..), position = "identity") +
+      geom_histogram(alpha = 0.5, aes(y = ..density..),
+                     position = "identity", binwidth = 1000) +
       scale_fill_discrete(
             breaks = c("new", "old"),
             labels = c("imputed", "omitted")) +
+      theme(legend.position = c(1, 1), legend.justification = c(1,1)) +
+      theme(legend.background = element_blank()) +
+      theme(legend.key = element_blank()) +
       theme(axis.ticks = element_blank(), axis.text.x = element_blank()) +
       theme(axis.title.x=element_blank()) +
-      ggtitle("Total steps: imputed vs. missing data omitted")
+      ggtitle("Total steps per day: imputed vs. missing data omitted")
 
 p2 <- ggplot(totalSteps5, aes(sums, fill = dataset)) +
       geom_density(alpha = 0.2) +
-      scale_fill_discrete(
-            breaks = c("new", "old"),
-            labels = c("imputed", "omitted")) +
-      xlab("total steps")
+      theme(legend.position = "none") +
+      xlab("total steps per day")
 
 # Function for arranging ggplots in one window (from S. Turner at
 # http://www.gettinggeneticsdone.com/2010/03/arrange-multiple-ggplot2-plots-in-same.html)
