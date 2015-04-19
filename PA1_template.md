@@ -12,7 +12,8 @@ output:
 The following function **assumes dplyr and ggplot2 are installed** and loads them if not already loaded.  
 This function was adapted from maloneypatr's solution on [this web page](http://stackoverflow.com/questions/15155814/check-if-r-package-is-installed-then-load-library) at stackoverflow.
 
-```{r loadPackages, message=FALSE}
+
+```r
 load_pkgs <- function(pkg1, ...)  {
      
       # convert arguments to a vector
@@ -28,12 +29,13 @@ load_pkgs <- function(pkg1, ...)  {
             }
       }
 load_pkgs(c("dplyr", "ggplot2"))
-```            
+```
 
 
 Per course instructions the "activity.zip" dataset is stored locally.  
 Extract the dataset if needed, then format and read. 
-```{r extractAndRead}
+
+```r
 if(!file.exists("activity.csv"))  {
       unzip("activity.zip", exdir = ".")
       }
@@ -42,17 +44,64 @@ dat <- tbl_df(read.csv("activity.csv"))
 
 
 Dataset structure
-```{r} 
-glimpse(dat)
-head(dat, 3)
-tail(dat, 3)
 
+```r
+glimpse(dat)
+```
+
+```
+## Observations: 17568
+## Variables:
+## $ steps    (int) NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ date     (fctr) 2012-10-01, 2012-10-01, 2012-10-01, 2012-10-01, 2012...
+## $ interval (int) 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 100, 10...
+```
+
+```r
+head(dat, 3)
+```
+
+```
+## Source: local data frame [3 x 3]
+## 
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+```
+
+```r
+tail(dat, 3)
+```
+
+```
+## Source: local data frame [3 x 3]
+## 
+##   steps       date interval
+## 1    NA 2012-11-30     2345
+## 2    NA 2012-11-30     2350
+## 3    NA 2012-11-30     2355
+```
+
+```r
 summary(dat)
+```
+
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA's   :2304     (Other)   :15840
 ```
 
 
 Coerce "date" variable
-```{r}
+
+```r
 dat$date <- as.Date(dat$date)
 ```
 
@@ -62,7 +111,8 @@ dat$date <- as.Date(dat$date)
 Ignore missing values for this part of the assignment (per instructions)
 
 #### 1. Calculate total number of steps taken per day
-```{r}
+
+```r
 totalSteps <- dat %>%
       group_by(date) %>%
       summarise(sums = sum(steps))
@@ -70,7 +120,8 @@ totalSteps <- dat %>%
 
 
 #### 2. Histogram of total number of steps per day
-```{r, totalSteps1, fig.align='left', fig.height=5, message=FALSE}
+
+```r
 ggplot(totalSteps, aes(x=sums)) +
       geom_histogram(aes(fill = ..count..), binwidth = 1000) +
       geom_text(data = NULL, x = 17500, y = 8.2,
@@ -79,18 +130,33 @@ ggplot(totalSteps, aes(x=sums)) +
       ggtitle("Histogram of total steps per day")
 ```
 
+<img src="figure/totalSteps1-1.png" title="plot of chunk totalSteps1" alt="plot of chunk totalSteps1" style="display: block; margin: auto auto auto 0;" />
+
 
 #### 3. Mean and median of total number of steps per day
-```{r}
+
+```r
 mean(na.omit(totalSteps$sums))
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(na.omit(totalSteps$sums))
+```
+
+```
+## [1] 10765
 ```
 
 
 ## What is the average daily activity pattern?
 
 #### 1. Time series plot of the 5-minute interval and average number of steps taken, averaged across all days
-```{r int_averages}
+
+```r
 int_averages <- dat %>%
       group_by(interval) %>%
       summarise(mean_steps = mean(na.omit(steps)))
@@ -98,8 +164,18 @@ int_averages <- dat %>%
 head(int_averages, 3)
 ```
 
+```
+## Source: local data frame [3 x 2]
+## 
+##   interval mean_steps
+## 1        0  1.7169811
+## 2        5  0.3396226
+## 3       10  0.1320755
+```
+
 Time series plot of mean of intervals
-```{r, IntervalAvgs, fig.align='left', fig.height=5, message=FALSE}
+
+```r
 ggplot(int_averages, aes(x=interval, y=mean_steps)) +
       geom_line() +
       xlab("interval id") +
@@ -107,32 +183,48 @@ ggplot(int_averages, aes(x=interval, y=mean_steps)) +
       ggtitle("Average steps per daily 5 minute interval")
 ```
 
+<img src="figure/IntervalAvgs-1.png" title="plot of chunk IntervalAvgs" alt="plot of chunk IntervalAvgs" style="display: block; margin: auto auto auto 0;" />
+
 
 #### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-```{r}
+
+```r
 maxInt <- int_averages %>%
       filter(mean_steps == max(mean_steps))
 
 maxInt
 ```
 
-Interval id #`r maxInt$interval` contains the maximum average number of steps, approximately `r round(maxInt$mean_steps, 0)`. 
+```
+## Source: local data frame [1 x 2]
+## 
+##   interval mean_steps
+## 1      835   206.1698
+```
+
+Interval id #835 contains the maximum average number of steps, approximately 206. 
 
 ## Imputing missing values
 
 #### 1. Total number of missing values in the dataset 
-```{r}
+
+```r
 length(which(complete.cases(dat) == FALSE))
 ```
 
-`r length(which(complete.cases(dat) == FALSE))` 
-of the `r nrow(dat)` rows are missing values.  
+```
+## [1] 2304
+```
+
+2304 
+of the 17568 rows are missing values.  
 
 #### 2. Strategy for filling in missing values:  
 Replace missing values with the mean calculated for each interval.
 
 #### 3. New dataset with imputed values
-```{r}
+
+```r
 dat2 <- dat
 for(i in 1:nrow(dat2))  {
       dat2[i, 1] <- ifelse(
@@ -144,13 +236,15 @@ for(i in 1:nrow(dat2))  {
 
 
 #### 4. New histogram with imputed values
-```{r}
+
+```r
 totalSteps2 <- dat2 %>%
       group_by(date) %>%
       summarise(sums = sum(steps))
 ```
 
-```{r, totalSteps2, fig.align='left', fig.height=5, message=FALSE}
+
+```r
 ggplot(totalSteps2, aes(x=sums)) +
       geom_histogram(aes(fill = ..count..), binwidth = 1000) +
       geom_text(data = NULL, x = 17500, y = 13.2, colour = "darkgray",
@@ -159,25 +253,49 @@ ggplot(totalSteps2, aes(x=sums)) +
       ggtitle("Histogram of total steps per day with imputed values")
 ```
 
+<img src="figure/totalSteps2-1.png" title="plot of chunk totalSteps2" alt="plot of chunk totalSteps2" style="display: block; margin: auto auto auto 0;" />
+
 
 ##### 4.1 Mean and median of new dataset with imputed values
-```{r}
+
+```r
 mean(na.omit(totalSteps2$sums))
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(na.omit(totalSteps2$sums))
+```
+
+```
+## [1] 10766.19
 ```
 
 
 #### 4.2 Differences in mean and median: new vs. old
-```{r}
+
+```r
 x <- mean(na.omit(totalSteps2$sums)) - mean(na.omit(totalSteps$sums))
 y <- median(na.omit(totalSteps2$sums)) - median(na.omit(totalSteps$sums))
 x ; y
 ```
 
-### Conclusion: 
-When missing values are imputed the difference between the two datasets in mean (`r x`) and median (`r round(y, 0)`) appears insignificant. Overlaid density plots (below) show imputation heightens and sharpens kurtosis in the resulting dataset.
+```
+## [1] 0
+```
 
-```{r}
+```
+## [1] 1.188679
+```
+
+### Conclusion: 
+When missing values are imputed the difference between the two datasets in mean (0) and median (1) appears insignificant. Overlaid density plots (below) show imputation heightens and sharpens kurtosis in the resulting dataset.
+
+
+```r
 # Visual comparison of the two datasets  
 # Overlay density and histogram plots
 
@@ -192,8 +310,8 @@ totalSteps4$dataset <- "new"
 totalSteps5 <- rbind(totalSteps3, totalSteps4)
 ```
 
-```{r, overlaidDensity, fig.align='left', message=FALSE, warning=FALSE}
 
+```r
 # These plots are better stacked on each other, so prepare
 # for processing via function shown further below
 
@@ -243,11 +361,14 @@ arrange_ggplot2 <- function(..., nrow=NULL, ncol=NULL, as.table=FALSE) {
 arrange_ggplot2(p1, p2, nrow = 2)
 ```
 
+<img src="figure/overlaidDensity-1.png" title="plot of chunk overlaidDensity" alt="plot of chunk overlaidDensity" style="display: block; margin: auto auto auto 0;" />
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 #### 1. Using the new dataset create a new factor variable with two levels - "weekday" and "weekend"  
-```{r}
+
+```r
 dat3 <- dat2
 days <- lapply(dat2$date, weekdays)
 dat3$date_type  <- as.factor(ifelse(grepl("Sat|Sun", days), "weekend", "weekday"))
@@ -259,7 +380,8 @@ select(steps, date, date_type, interval)
 
 
 #### 2. Panel plot of average steps per 5-minute intervals: one for weekend days, the other for weekday days.
-```{r intAveragesFactored}
+
+```r
 int_averages2 <- dat3 %>%
       group_by(date_type, interval) %>%
       summarise(mean_steps = mean(steps))
@@ -267,7 +389,8 @@ int_averages2 <- dat3 %>%
 
 
 Time series panel plot of mean of intervals
-```{r, WeekendsWeekdays, fig.align='left', message=FALSE}
+
+```r
 ggplot(int_averages2, aes(x=interval, y=mean_steps)) +
       geom_line() +
       facet_grid(date_type ~ .) +
@@ -275,6 +398,8 @@ ggplot(int_averages2, aes(x=interval, y=mean_steps)) +
       ylab("average steps") +
       ggtitle("Average steps per daily 5 minute interval")
 ```
+
+<img src="figure/WeekendsWeekdays-1.png" title="plot of chunk WeekendsWeekdays" alt="plot of chunk WeekendsWeekdays" style="display: block; margin: auto auto auto 0;" />
 
 
 ### Conclusion:  
